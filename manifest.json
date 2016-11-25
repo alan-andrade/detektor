@@ -1,0 +1,17 @@
+{
+
+  "manifest_version": 2,
+  "name": "Detektor",
+  "version": "0.1",
+  "description": "Key and BPM detector for souncloud and youtube.",
+  "homepage_url": "https://github.com/alanandrade/detektor",
+  "permissions": [
+    "activeTab",
+    "contextMenus",
+    "http://localhost:3000/*"
+  ],
+
+  "background": {
+    "scripts":["background.js"]
+  }
+}
