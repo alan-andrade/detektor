@@ -1,13 +1,5 @@
 const menuId = "detektor";
 
-function handleUpdated(tabId, changeInfo, tabInfo) {
-    if (changeInfo.url) {
-        alert("Tab: " + tabId + " URL changed to " + changeInfo.url);
-    }
-}
-
-browser.tabs.onUpdated.addListener(handleUpdated);
-
 browser.contextMenus.create({
     id: menuId,
     title: "Find Key (Camelot)"
@@ -20,3 +12,34 @@ browser.contextMenus.onClicked.addListener(function(info, tab) {
         });
     }
 });
+
+var socket = new Phoenix.Socket('ws://localhost:4000/socket');
+
+socket.connect();
+channel = socket.channel("detektor:main", {});
+channel
+    .join()
+    .receive("ok", resp => {
+        console.log("Joined successfully", resp)
+    })
+    .receive("error", resp => { console.log("Unable to join", resp) })
+
+
+var port;
+
+function addUrlToQueue(url) {
+    channel.push("findKey", url);
+}
+
+function connected(p) {
+    port = p;
+    port.onMessage.addListener(addUrlToQueue);
+}
+
+browser.runtime.onConnect.addListener(connected);
+
+channel.on("findKey", payload => {
+    console.log(payload);
+    // Display in box
+    port.postMessage(payload);
+})

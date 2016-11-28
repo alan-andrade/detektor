@@ -1,28 +1,38 @@
-function httpGetAsync(theUrl, callback)
-{
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-            callback(xmlHttp.responseText);
-        } else if (xmlHttp.status == 406) {
-            callback(xmlHttp.responseText);
-        }
+var port = browser.runtime.connect({name: "detektor"});
+
+port.postMessage({
+    url: document.location.href
+});
+
+port.onMessage.addListener(function (msg) {
+    var out;
+    console.log(msg);
+    if (msg.status == "processing") {
+        out = 'Processing...'
+    } else if (msg.key) {
+        out = msg.key
+    } else {
+        out = "error"
     }
-    xmlHttp.open("GET", theUrl, true); // true for asynchronous
-    xmlHttp.send(null);
+
+    if (document.getElementById('__detektor')) {
+        var el = document.getElementById('__detektor');
+        el.textContent = out
+    } else {
+        document.body.appendChild(htmlBox(out));
+    }
+});
+
+function htmlBox(msg) {
+    var wrapper = document.createElement("div");
+    wrapper.innerHTML = '<div \
+        id="__detektor" \
+        style="position: absolute; \
+                top: 49px; \
+                left: 0; \
+                padding: 20px; \
+                background: white; \
+                z-index: 19999999999; \
+                border: 1px solid orange;">'+ msg +'</div>';
+    return wrapper;
 }
-
-var url = "http://localhost:3000/findKey?url=" + document.location;
-
-httpGetAsync(url, function(response) {
-    let json = JSON.parse(response);
-
-    if (json.error) {
-        alert(json.error);
-        return
-    }
-
-    if (json.key) {
-        alert("Camelot Key: " + json.key);
-    }
-})

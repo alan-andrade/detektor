@@ -7,11 +7,13 @@
   "homepage_url": "https://github.com/alanandrade/detektor",
   "permissions": [
     "activeTab",
+    "tabs",
+    "webRequest",
     "contextMenus",
-    "http://localhost:3000/*"
+    "http://localhost:4000/*"
   ],
 
   "background": {
-    "scripts":["background.js"]
+    "scripts":["static/phoenix.js", "background.js"]
   }
 }
