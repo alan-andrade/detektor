@@ -7,13 +7,24 @@
   "homepage_url": "https://github.com/alanandrade/detektor",
   "permissions": [
     "activeTab",
+    "browser_action",
     "tabs",
+    "storage",
     "webRequest",
     "contextMenus",
     "http://localhost:4000/*"
   ],
-
   "background": {
     "scripts":["static/phoenix.js", "background.js"]
+  },
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';",
+  "browser_action": {
+    "browser_style": true,
+    "default_icon": {
+      "16": "button/detektor16.png",
+      "32": "button/detektor32.png"
+    },
+    "default_title": "DeTekT0R",
+    "default_popup": "popup/playlist.html"
   }
 }

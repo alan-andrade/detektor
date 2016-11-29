@@ -1,4 +1,5 @@
 const menuId = "detektor";
+const storage = browser.storage.local;
 
 browser.contextMenus.create({
     id: menuId,
@@ -27,13 +28,22 @@ channel
 
 var port;
 
-function addUrlToQueue(url) {
-    channel.push("findKey", url);
+function addUrlToPlaylist(url) {
+    storage.get("playlist").then(function (res) {
+        var currentPlaylist = res["playlist"];
+        if (!currentPlaylist) {
+            currentPlaylist = [];
+        }
+
+        var track = {url: url.url, key: "--"};
+        currentPlaylist.push(url);
+        storage.set({"playlist": currentPlaylist});
+    });
 }
 
 function connected(p) {
     port = p;
-    port.onMessage.addListener(addUrlToQueue);
+    port.onMessage.addListener(addUrlToPlaylist);
 }
 
 browser.runtime.onConnect.addListener(connected);
