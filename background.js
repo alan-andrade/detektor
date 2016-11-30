@@ -3,7 +3,7 @@ const storage = browser.storage.local;
 
 browser.contextMenus.create({
     id: menuId,
-    title: "Find Key (Camelot)"
+    title: "Add to Playlist"
 });
 
 browser.contextMenus.onClicked.addListener(function(info, tab) {
@@ -28,28 +28,47 @@ channel
 
 var port;
 
-function addUrlToPlaylist(url) {
+// popup
+function onConnection(data) {
     storage.get("playlist").then(function (res) {
         var currentPlaylist = res["playlist"];
         if (!currentPlaylist) {
             currentPlaylist = [];
         }
 
-        var track = {url: url.url, key: "--"};
-        currentPlaylist.push(url);
+        var track = {
+            url: data.url,
+            title: data.title,
+            key: "N/A"
+        };
+
+        if (_.findWhere(currentPlaylist, {url: track.url})) {
+            channel.push("getKeyForUrl", data.url);
+            return;
+        }
+        currentPlaylist.push(track);
         storage.set({"playlist": currentPlaylist});
+        channel.push("getKeyForUrl", data.url);
     });
 }
 
-function connected(p) {
-    port = p;
-    port.onMessage.addListener(addUrlToPlaylist);
-}
+browser.runtime.onConnect.addListener(function(_port) {
+    port = _port;
+    port.onMessage.addListener(onConnection);
+});
 
-browser.runtime.onConnect.addListener(connected);
-
-channel.on("findKey", payload => {
-    console.log(payload);
-    // Display in box
-    port.postMessage(payload);
+// content script
+channel.on("keyFound", track => {
+    storage.get("playlist").then(function (res) {
+        var playlist = res["playlist"];
+        var oldTrack = _.findWhere(playlist, {url: track.url});
+        if (!oldTrack) {
+            console.log("Playlist should've been cleared before receving key response.");
+            return
+        }
+        var newPlaylist = _.without(playlist, oldTrack);
+        oldTrack.key = track.key;
+        newPlaylist.push(oldTrack);
+        storage.set({"playlist": newPlaylist});
+    })
 })
