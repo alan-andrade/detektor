@@ -21,7 +21,7 @@
         </thead>
         <tbody id="playlist-body">
           <tr v-for="track in playlist">
-            <td><a v-on:click="goToTrack(track)">{{track.title}}</a></td>
+            <td><a v-on:click="playTrack(track)">{{track.title}}</a></td>
             <td>{{track.key}}</td>
             </tr>
           </tbody>
