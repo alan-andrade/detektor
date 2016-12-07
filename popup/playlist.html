@@ -17,18 +17,26 @@
           <tr>
             <th>Track</th>
             <th>Key</th>
+            <th>Actions</th>
           </tr>
         </thead>
-        <tbody id="playlist-body">
+        <tbody id="playlist-body" v-sortable="{
+          onUpdate: onSortableUpdate,
+          chosenClass: 'active',
+          ghostClass: 'info'
+          }">
           <tr v-for="track in playlist">
             <td><a v-on:click="playTrack(track)">{{track.title}}</a></td>
             <td>{{track.key}}</td>
-            </tr>
-          </tbody>
+            <td><a v-on:click="removeTrack(track)">Del</a></td>
+          </tr>
+        </tbody>
       </table>
     </div>
 
     <script src="vue.js"></script>
+    <script src="sortable.js"></script>
+    <script src="vue-sortable.js"></script>
     <script src="playlist.js"></script>
   </body>
 
