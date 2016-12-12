@@ -1,4 +1,7 @@
 var storage = browser.storage.local;
+var port = browser.runtime.connect({
+    name: "detektor"
+});
 
 const CurrentTrack  = 'currentTrack';
 const Playlist      = 'playlist';
@@ -70,6 +73,13 @@ var App = new Vue({
                 return t.url == track.url;
             });
             this.playlist.splice(trackIndex, 1);
+        },
+
+        analyzeTrack: function (track) {
+            port.postMessage({
+                action: 'analyze',
+                url: track.url
+            });
         },
 
         onSortableUpdate: function(event) {

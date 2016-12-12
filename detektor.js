@@ -13,6 +13,7 @@ var title = function () {
 }()
 
 port.postMessage({
+    action: 'addToPlaylist',
     title: title,
     url: document.location.href
 });

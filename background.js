@@ -36,19 +36,23 @@ function onConnection(data) {
             currentPlaylist = [];
         }
 
-        var track = {
-            url: data.url,
-            title: data.title,
-            key: "N/A"
-        };
+        if (data.action == 'addToPlaylist') {
+            if (_.findWhere(currentPlaylist, {url: data.url})) {
+                return;
+            }
 
-        if (_.findWhere(currentPlaylist, {url: track.url})) {
+            var track = {
+                url: data.url,
+                title: data.title,
+                key: "N/A"
+            };
+
             channel.push("getKeyForUrl", data.url);
-            return;
+            currentPlaylist.push(track);
+            storage.set({"playlist": currentPlaylist});
+        } else if (data.action == 'analyze') {
+            channel.push("getKeyForUrl", data.url);
         }
-        currentPlaylist.push(track);
-        storage.set({"playlist": currentPlaylist});
-        channel.push("getKeyForUrl", data.url);
     });
 }
 
