@@ -8,8 +8,11 @@ browser.contextMenus.create({
 
 browser.contextMenus.onClicked.addListener(function(info, tab) {
     if (info.menuItemId == menuId) {
-        browser.tabs.executeScript({
-            file: "detektor.js"
+        var code = "var linkUrl = '" + (info.linkUrl || 'document.location.href') + "';";
+        browser.tabs.executeScript({ code: code }, function() {
+            browser.tabs.executeScript({
+                file: "detektor.js"
+            });
         });
     }
 });
@@ -72,6 +75,7 @@ channel.on("keyFound", track => {
         }
         var newPlaylist = _.without(playlist, oldTrack);
         oldTrack.key = track.key;
+        if(track.title) { oldTrack.title = track.title };
         newPlaylist.push(oldTrack);
         storage.set({"playlist": newPlaylist});
     })

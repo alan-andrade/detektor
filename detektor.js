@@ -12,8 +12,11 @@ var title = function () {
     return pieces.join("-");
 }()
 
+// linkUrl should be defined in javascript injection via background.js
+if(typeof linkUrl == 'undefined') { console.log('Something went wrong with context menu callback! linkUrl is not defined!') }
+
 port.postMessage({
     action: 'addToPlaylist',
     title: title,
-    url: document.location.href
+    url: linkUrl
 });
